@@ -20,7 +20,7 @@ def scrape_info():
     url = "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
     browser.visit(url)
 
-    time.sleep(1)
+    time.sleep(2)
 
     html = browser.html
     # Use beautiful soup and set the parser to html
@@ -42,29 +42,26 @@ def scrape_info():
     # Set the url and use chrome webdriver to visit the webpage
     jpl_url = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
     browser.visit(jpl_url)
-    time.sleep(1)
+    time.sleep(2)
 
     # Parse through the html, find the item where the id='full_image' and click that item with chrome webdriver
     full_image = browser.find_by_id('full_image')
     full_image.click()
-    time.sleep(1)
+    time.sleep(2)
 
     # Find a link by 'more info' tag and click that item
     more_info = browser.find_link_by_partial_text('more info')
     more_info.click()
-    time.sleep(1)
+    time.sleep(2)
 
     # activate beautiful soup and select html parser 
     html = browser.html
     soup = bs(html, 'html.parser')
-    jpl_results = soup.find('figure', class_='lede')
-
-    # Find the image link and store it in a variable  
-    jpl_image_url = jpl_results.a['href']
+    # Find the image link and store it in a variable 
+    jpl_image_url = soup.find('figure', class_='lede').a['href']
 
     # Include the beginning of the full webpage
-    jpl_image_url = f'https://www.jpl.nasa.gov{jpl_image_url}'
-    featured_image_url = {"image_url":jpl_image_url}
+    featured_image_url = 'https://www.jpl.nasa.gov' + jpl_image_url
 
     browser.quit()
 
@@ -77,7 +74,7 @@ def scrape_info():
     # Set the url and use chrome webdriver to visit the webpage
     tw_url = 'https://twitter.com/marswxreport?lang=en'
     browser.visit(tw_url)
-    time.sleep(1)
+    time.sleep(2)
     html = browser.html
     soup = bs(html, 'html.parser')
     # Parse the html and find the first div tag where class = 'js-tweet-text-container'
@@ -90,9 +87,6 @@ def scrape_info():
     final_results["mars_weather"] = mars_weather
 
 # --------------------------------------------------------------------------------
-    executable_path = {"executable_path": "/usr/local/bin/chromedriver"}
-    browser = Browser('chrome', **executable_path, headless=True)
-
     space_facts_url = 'https://space-facts.com/mars/'
     # Use pandas to read the html in the url, scrape the table and assign it to a variable
     table = pd.read_html(space_facts_url)
@@ -100,15 +94,11 @@ def scrape_info():
     table_df = table[0]
     # Change column names
     table_df.columns=["Title","Fact"]
-    # Print table df
-    html_table = table_df.to_html("mars_facts.html",index=False)
-    # html_table.set_index("Title")
-    html_table = html_table.replace('\n','')
-    html_table_final = html_table.to_html(classes="mars_facts table table-striped")
-
-    browser.quit()
-
-    final_results["html_table"] = html_table_final
+    # Cnvert html to dictionary with pandas
+    table_dict = table_df.to_dict(orient='records')
+    # Insert into final results
+    final_results["html_table"] = table_dict
+    # print(final_results)
 # --------------------------------------------------------------------------------
 
     # Scrape the USGS Astrogeology site
@@ -116,7 +106,7 @@ def scrape_info():
     driver = webdriver.Chrome()
     usgs_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     driver.get(usgs_url)
-    time.sleep(1)
+    time.sleep(2)
     # Create empty list to hold dictionaries
     hemisphere_image_urls=[]
 
@@ -156,3 +146,6 @@ def scrape_info():
     final_results["hemisphere_image_urls"] = hemisphere_image_urls
 
     return final_results
+
+r = scrape_info()
+print(r)

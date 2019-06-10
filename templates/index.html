@@ -7,6 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mission to Mars</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -32,7 +33,7 @@
           <div class="panel-body">
             <h2>Current Weather on Mars</h2>
             <hr>
-            <h4>{{final_results.mars_weather}}</h4>
+            <p>{{final_results.mars_weather}}</p>
           </div>
         </div>
       </div>
@@ -43,7 +44,9 @@
             <div class="panel-body">
               <h2>Mars Featured Image</h2>
               <hr>
-              <img src="{{final_results.featured_image_url}}" alt="Mars Featured Image" style="width: 80%">
+              <a href={{final_results.featured_image_url}}>
+                <img class="center" src={{final_results.featured_image_url}} alt="Mars Featured Image" style="width: 80%">
+              </a>
             </div>
           </div>
         </div>
@@ -52,25 +55,39 @@
             <div class="panel-body">
               <h2>Mars Interesting Facts</h2>
               <hr>
-              <p style="border-style:solid;border-color:rgb(88, 124, 88);border-width:2px;border-radius:2px">
-                {{final_results.html_table}}</p>
+              <table class="table table-striped" style="border-style:solid;border-color:rgb(88, 124, 88);border-width:2px;border-radius:2px">
+                <thead>
+                  <tr style="text-align: right;">
+                    <th>Description</th>
+                    <th>Fact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for d in final_results.html_table %}
+                  <tr>
+                    <td>{{d["Title"]}}</td>
+                    <td>{{d["Fact"]}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-            <h2 class="text-center">Mars Hemispheres</h2>
+          <h2 class="text-center">Mars Hemispheres</h2>
         </div>
       </div>
-    <!--  row 3     -->
+      <!--  row 3     -->
       <div class="row">
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-body">
               <a href={{final_results.hemisphere_image_urls[0].image_url}} class="thumbnail">
                 <img src={{final_results.hemisphere_image_urls[0].image_url}} alt="">
-                <h4 class="text-center">{{final_results.hemisphere_image_urls[0].title}}</h4>
+                <h4 class="text-center text-top">{{final_results.hemisphere_image_urls[0].title}}</h4>
               </a>
             </div>
           </div>
